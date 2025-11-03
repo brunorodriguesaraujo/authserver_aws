@@ -24,7 +24,11 @@ class UserService(
             throw BadRequestException("User already exists")
         }
         return repository.save(user)
-            .also { log.info("User inserted: {}", it.id) }
+            .also { user ->
+                val avatar = avatarService.generateFor(user)
+                user.avatar = avatar
+                repository.save(user)
+            }
     }
 
     fun update(id: Long, name: String): User? {
